@@ -19,13 +19,11 @@ function Expenses({ user, refreshDashboard }) {
   // =========================================
 
   const fetchExpenses = () => {
-    fetch("http://127.0.0.1:8000/api/expenses")
+    fetch("https://vinayaka-chaturthi-api.onrender.com/api/expenses")
       .then((response) => response.json())
-
       .then((data) => {
         setExpenses(data.expenses || []);
       })
-
       .catch((error) => {
         console.error("Expenses Error:", error);
       });
@@ -43,41 +41,39 @@ function Expenses({ user, refreshDashboard }) {
     e.preventDefault();
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/expenses", {
-        method: "POST",
+      const response = await fetch(
+        "https://vinayaka-chaturthi-api.onrender.com/api/expenses",
+        {
+          method: "POST",
 
-        headers: {
-          "Content-Type": "application/json",
+          headers: {
+            "Content-Type": "application/json",
+          },
+
+          body: JSON.stringify({
+            description: description,
+            amount: Number(amount),
+            expense_date: expenseDate,
+          }),
         },
-
-        body: JSON.stringify({
-          description: description,
-          amount: Number(amount),
-          expense_date: expenseDate,
-        }),
-      });
+      );
 
       if (!response.ok) {
         throw new Error("Failed to add expense");
       }
 
       // Clear form
-
       setDescription("");
       setAmount("");
       setExpenseDate("");
 
       // Close modal
-
       setShowForm(false);
 
       // Refresh expenses
-
       fetchExpenses();
 
-      // IMPORTANT:
-      // Refresh dashboard immediately
-
+      // Refresh dashboard
       refreshDashboard();
     } catch (error) {
       console.error("Add Expense Error:", error);
@@ -98,9 +94,12 @@ function Expenses({ user, refreshDashboard }) {
     }
 
     try {
-      const response = await fetch(`http://127.0.0.1:8000/api/expenses/${id}`, {
-        method: "DELETE",
-      });
+      const response = await fetch(
+        `https://vinayaka-chaturthi-api.onrender.com/api/expenses/${id}`,
+        {
+          method: "DELETE",
+        },
+      );
 
       if (!response.ok) {
         throw new Error("Failed to delete expense");
@@ -111,7 +110,6 @@ function Expenses({ user, refreshDashboard }) {
       );
 
       // Refresh dashboard
-
       refreshDashboard();
     } catch (error) {
       console.error("Delete Expense Error:", error);

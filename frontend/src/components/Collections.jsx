@@ -19,7 +19,7 @@ function Collections({ user, refreshDashboard }) {
   // =========================================
 
   const fetchCollections = () => {
-    fetch("http://127.0.0.1:8000/api/collections")
+    fetch("https://vinayaka-chaturthi-api.onrender.com")
       .then((response) => response.json())
 
       .then((data) => {
@@ -43,7 +43,7 @@ function Collections({ user, refreshDashboard }) {
     e.preventDefault();
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/collections", {
+      const response = await fetch("https://vinayaka-chaturthi-api.onrender.com/api/collections", {
         method: "POST",
 
         headers: {
@@ -99,7 +99,7 @@ function Collections({ user, refreshDashboard }) {
 
     try {
       const response = await fetch(
-        `http://127.0.0.1:8000/api/collections/${id}`,
+        `https://vinayaka-chaturthi-api.onrender.com/api/collections/${id}`,
         {
           method: "DELETE",
         },

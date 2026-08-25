@@ -27,7 +27,7 @@ function App() {
   // =========================================
 
   const refreshDashboard = () => {
-    fetch("http://127.0.0.1:8000/api/dashboard")
+    fetch("https://vinayaka-chaturthi-api.onrender.com")
       .then((response) => response.json())
       .then((data) => {
         setDashboard(data);
@@ -53,16 +53,19 @@ function App() {
     setLoginError("");
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      const response = await fetch(
+        "https://vinayaka-chaturthi-api.onrender.com/api/login",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            username: loginUsername,
+            password: loginPassword,
+          }),
         },
-        body: JSON.stringify({
-          username: loginUsername,
-          password: loginPassword,
-        }),
-      });
+      );
 
       const data = await response.json();
 
