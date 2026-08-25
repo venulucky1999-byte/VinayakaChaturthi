@@ -3,32 +3,36 @@ import { Plus, Search, UserRound, Trash2 } from "lucide-react";
 
 function Collections({ user, refreshDashboard }) {
   const [collections, setCollections] = useState([]);
-
   const [search, setSearch] = useState("");
 
   const [showForm, setShowForm] = useState(false);
 
   const [name, setName] = useState("");
-
   const [amount, setAmount] = useState("");
-
   const [collectionDate, setCollectionDate] = useState("");
+
+  const API_URL = "https://vinayaka-chaturthi-api.onrender.com";
 
   // =========================================
   // GET COLLECTIONS
   // =========================================
 
-  const fetchCollections = () => {
-    fetch("https://vinayaka-chaturthi-api.onrender.com")
-      .then((response) => response.json())
+  const fetchCollections = async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/collections`);
 
-      .then((data) => {
-        setCollections(data.collections || []);
-      })
+      if (!response.ok) {
+        throw new Error("Failed to fetch collections");
+      }
 
-      .catch((error) => {
-        console.error("Collections Error:", error);
-      });
+      const data = await response.json();
+
+      console.log("Collections data:", data);
+
+      setCollections(data.collections || []);
+    } catch (error) {
+      console.error("Collections Error:", error);
+    }
   };
 
   useEffect(() => {
@@ -43,7 +47,7 @@ function Collections({ user, refreshDashboard }) {
     e.preventDefault();
 
     try {
-      const response = await fetch("https://vinayaka-chaturthi-api.onrender.com/api/collections", {
+      const response = await fetch(`${API_URL}/api/collections`, {
         method: "POST",
 
         headers: {
@@ -62,22 +66,17 @@ function Collections({ user, refreshDashboard }) {
       }
 
       // Clear form
-
       setName("");
       setAmount("");
       setCollectionDate("");
 
       // Close modal
-
       setShowForm(false);
 
-      // Refresh collections
+      // Get latest collections
+      await fetchCollections();
 
-      fetchCollections();
-
-      // IMPORTANT:
-      // Refresh dashboard immediately
-
+      // Refresh dashboard
       refreshDashboard();
     } catch (error) {
       console.error("Add Collection Error:", error);
@@ -98,23 +97,20 @@ function Collections({ user, refreshDashboard }) {
     }
 
     try {
-      const response = await fetch(
-        `https://vinayaka-chaturthi-api.onrender.com/api/collections/${id}`,
-        {
-          method: "DELETE",
-        },
-      );
+      const response = await fetch(`${API_URL}/api/collections/${id}`, {
+        method: "DELETE",
+      });
 
       if (!response.ok) {
         throw new Error("Failed to delete collection");
       }
 
+      // Remove from screen immediately
       setCollections((currentCollections) =>
         currentCollections.filter((item) => item.id !== id),
       );
 
       // Refresh dashboard
-
       refreshDashboard();
     } catch (error) {
       console.error("Delete Collection Error:", error);
@@ -265,45 +261,54 @@ function Collections({ user, refreshDashboard }) {
 
                 <th>Date</th>
 
-                {/* ADMIN */}
-
                 {user && user.role === "admin" && <th>Action</th>}
               </tr>
             </thead>
 
             <tbody>
-              {filteredCollections.map((item) => (
-                <tr key={item.id}>
-                  <td>
-                    <div className="person">
-                      <div className="person-icon">
-                        <UserRound size={17} />
-                      </div>
-
-                      <span>{item.name}</span>
-                    </div>
+              {filteredCollections.length === 0 ? (
+                <tr>
+                  <td
+                    colSpan={user && user.role === "admin" ? 4 : 3}
+                    style={{ textAlign: "center" }}
+                  >
+                    No collections found
                   </td>
-
-                  <td className="amount">
-                    ₹{Number(item.amount).toLocaleString("en-IN")}
-                  </td>
-
-                  <td>{item.collection_date}</td>
-
-                  {/* ADMIN DELETE */}
-
-                  {user && user.role === "admin" && (
-                    <td>
-                      <button
-                        className="delete-button"
-                        onClick={() => handleDeleteCollection(item.id)}
-                      >
-                        <Trash2 size={17} />
-                      </button>
-                    </td>
-                  )}
                 </tr>
-              ))}
+              ) : (
+                filteredCollections.map((item) => (
+                  <tr key={item.id}>
+                    <td>
+                      <div className="person">
+                        <div className="person-icon">
+                          <UserRound size={17} />
+                        </div>
+
+                        <span>{item.name}</span>
+                      </div>
+                    </td>
+
+                    <td className="amount">
+                      ₹{Number(item.amount).toLocaleString("en-IN")}
+                    </td>
+
+                    <td>{item.collection_date}</td>
+
+                    {/* ADMIN DELETE */}
+
+                    {user && user.role === "admin" && (
+                      <td>
+                        <button
+                          className="delete-button"
+                          onClick={() => handleDeleteCollection(item.id)}
+                        >
+                          <Trash2 size={17} />
+                        </button>
+                      </td>
+                    )}
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>
