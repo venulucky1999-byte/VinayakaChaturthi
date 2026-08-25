@@ -3,7 +3,7 @@ from database import get_db_connection
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 from psycopg2.extras import RealDictCursor
-
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(title="Vinayaka Chaturthi API")
 
@@ -14,7 +14,7 @@ app = FastAPI(title="Vinayaka Chaturthi API")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
+    allow_origins=["https://vinayaka-chaturthi-dj7hxq4np-venulucky1999-byte.vercel.app"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
