@@ -27,7 +27,7 @@ function App() {
   // =========================================
 
   const refreshDashboard = () => {
-    fetch("https://vinayaka-chaturthi-api.onrender.com")
+    fetch("https://vinayaka-chaturthi-api.onrender.com/api/dashboard")
       .then((response) => response.json())
       .then((data) => {
         setDashboard(data);
