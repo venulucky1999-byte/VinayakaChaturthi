@@ -14,8 +14,8 @@ app = FastAPI(title="Vinayaka Chaturthi API")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://vinayaka-chaturthi-dj7hxq4np-venulucky1999-byte.vercel.app"],
-    allow_credentials=True,
+    allow_origins=["*"],
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
