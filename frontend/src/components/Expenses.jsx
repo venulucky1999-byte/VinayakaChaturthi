@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Plus, Search, Receipt, Trash2 } from "lucide-react";
+import { Plus, Search, Receipt, Trash2, Printer } from "lucide-react";
 
 function Expenses({ user, refreshDashboard }) {
   const [expenses, setExpenses] = useState([]);
@@ -14,18 +14,24 @@ function Expenses({ user, refreshDashboard }) {
 
   const [expenseDate, setExpenseDate] = useState("");
 
+  const API_URL = "https://vinayaka-chaturthi-api.onrender.com";
+
   // =========================================
   // GET EXPENSES
   // =========================================
 
   const fetchExpenses = () => {
-    fetch("https://vinayaka-chaturthi-api.onrender.com/api/expenses")
-      .then((response) => response.json())
+    fetch(`${API_URL}/api/expenses`)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Failed to fetch expenses");
+        }
 
+        return response.json();
+      })
       .then((data) => {
         setExpenses(data.expenses || []);
       })
-
       .catch((error) => {
         console.error("Expenses Error:", error);
       });
@@ -43,22 +49,19 @@ function Expenses({ user, refreshDashboard }) {
     e.preventDefault();
 
     try {
-      const response = await fetch(
-        "https://vinayaka-chaturthi-api.onrender.com",
-        {
-          method: "POST",
+      const response = await fetch(`${API_URL}/api/expenses`, {
+        method: "POST",
 
-          headers: {
-            "Content-Type": "application/json",
-          },
-
-          body: JSON.stringify({
-            description: description,
-            amount: Number(amount),
-            expense_date: expenseDate,
-          }),
+        headers: {
+          "Content-Type": "application/json",
         },
-      );
+
+        body: JSON.stringify({
+          description: description,
+          amount: Number(amount),
+          expense_date: expenseDate,
+        }),
+      });
 
       if (!response.ok) {
         throw new Error("Failed to add expense");
@@ -78,8 +81,7 @@ function Expenses({ user, refreshDashboard }) {
 
       fetchExpenses();
 
-      // IMPORTANT:
-      // Refresh dashboard immediately
+      // Refresh dashboard
 
       refreshDashboard();
     } catch (error) {
@@ -101,7 +103,7 @@ function Expenses({ user, refreshDashboard }) {
     }
 
     try {
-      const response = await fetch(`http://127.0.0.1:8000/api/expenses/${id}`, {
+      const response = await fetch(`${API_URL}/api/expenses/${id}`, {
         method: "DELETE",
       });
 
@@ -130,15 +132,32 @@ function Expenses({ user, refreshDashboard }) {
   );
 
   // =========================================
+  // TOTAL FILTERED EXPENSES
+  // =========================================
+
+  const filteredTotal = filteredExpenses.reduce(
+    (total, item) => total + Number(item.amount || 0),
+    0,
+  );
+
+  // =========================================
+  // PRINT / DOWNLOAD
+  // =========================================
+
+  const handlePrint = () => {
+    window.print();
+  };
+
+  // =========================================
   // UI
   // =========================================
 
   return (
-    <div className="page">
+    <div className="page expenses-page">
       {/* ================= ADD MODAL ================= */}
 
       {showForm && (
-        <div className="modal-overlay">
+        <div className="modal-overlay no-print">
           <div className="modal">
             <h2>Add Expense</h2>
 
@@ -212,7 +231,7 @@ function Expenses({ user, refreshDashboard }) {
 
       {/* ================= HEADER ================= */}
 
-      <div className="page-header">
+      <div className="page-header no-print">
         <div>
           <p className="page-label">FUND MANAGEMENT</p>
 
@@ -231,12 +250,28 @@ function Expenses({ user, refreshDashboard }) {
         )}
       </div>
 
+      {/* ================= PRINT HEADER ================= */}
+
+      <div className="expense-print-header">
+        <h1>Vinayaka Chaturthi</h1>
+
+        <h2>Expense Report</h2>
+
+        <p>Bondilipuram Pondari Street</p>
+
+        {search && (
+          <p>
+            Search: <strong>{search}</strong>
+          </p>
+        )}
+      </div>
+
       {/* ================= TABLE ================= */}
 
       <div className="table-card">
         {/* TOOLBAR */}
 
-        <div className="table-toolbar">
+        <div className="table-toolbar no-print">
           <div className="search-box">
             <Search size={18} />
 
@@ -247,6 +282,17 @@ function Expenses({ user, refreshDashboard }) {
               onChange={(e) => setSearch(e.target.value)}
             />
           </div>
+
+          {/* PRINT BUTTON */}
+
+          <button
+            className="print-button"
+            onClick={handlePrint}
+            title="Print or Download as PDF"
+          >
+            <Printer size={18} />
+            Print / Download
+          </button>
 
           <div className="collection-count">
             {filteredExpenses.length} Expenses
@@ -267,46 +313,103 @@ function Expenses({ user, refreshDashboard }) {
 
                 {/* ADMIN */}
 
-                {user && user.role === "admin" && <th>Action</th>}
+                {user && user.role === "admin" && (
+                  <th className="no-print">Action</th>
+                )}
               </tr>
             </thead>
 
             <tbody>
-              {filteredExpenses.map((item) => (
-                <tr key={item.id}>
-                  <td>
-                    <div className="person">
-                      <div className="person-icon">
-                        <Receipt size={17} />
-                      </div>
+              {filteredExpenses.length === 0 ? (
+                <tr>
+                  <td
+                    colSpan={user && user.role === "admin" ? 4 : 3}
+                    style={{ textAlign: "center" }}
+                  >
+                    No expenses found
+                  </td>
+                </tr>
+              ) : (
+                filteredExpenses.map((item) => (
+                  <tr key={item.id}>
+                    {/* DESCRIPTION */}
 
-                      <span>{item.description}</span>
-                    </div>
+                    <td>
+                      <div className="person">
+                        <div className="person-icon no-print">
+                          <Receipt size={17} />
+                        </div>
+
+                        <span>{item.description}</span>
+                      </div>
+                    </td>
+
+                    {/* AMOUNT */}
+
+                    <td className="amount">
+                      ₹{Number(item.amount).toLocaleString("en-IN")}
+                    </td>
+
+                    {/* DATE */}
+
+                    <td>{item.expense_date}</td>
+
+                    {/* ADMIN DELETE */}
+
+                    {user && user.role === "admin" && (
+                      <td className="no-print">
+                        <button
+                          className="delete-button"
+                          onClick={() => handleDeleteExpense(item.id)}
+                          title="Delete expense"
+                        >
+                          <Trash2 size={17} />
+                        </button>
+                      </td>
+                    )}
+                  </tr>
+                ))
+              )}
+            </tbody>
+
+            {/* TOTAL */}
+
+            {filteredExpenses.length > 0 && (
+              <tfoot>
+                <tr>
+                  <td style={{ textAlign: "right" }}>
+                    <strong>Total</strong>
                   </td>
 
                   <td className="amount">
-                    ₹{Number(item.amount).toLocaleString("en-IN")}
+                    <strong>₹{filteredTotal.toLocaleString("en-IN")}</strong>
                   </td>
 
-                  <td>{item.expense_date}</td>
-
-                  {/* ADMIN DELETE */}
+                  <td></td>
 
                   {user && user.role === "admin" && (
-                    <td>
-                      <button
-                        className="delete-button"
-                        onClick={() => handleDeleteExpense(item.id)}
-                      >
-                        <Trash2 size={17} />
-                      </button>
-                    </td>
+                    <td className="no-print"></td>
                   )}
                 </tr>
-              ))}
-            </tbody>
+              </tfoot>
+            )}
           </table>
         </div>
+      </div>
+
+      {/* ================= PRINT FOOTER ================= */}
+
+      <div className="expense-print-footer">
+        <p>
+          Total Expenses: <strong>{filteredExpenses.length}</strong>
+        </p>
+
+        <p>
+          Total Amount:{" "}
+          <strong>₹{filteredTotal.toLocaleString("en-IN")}</strong>
+        </p>
+
+        <p>Generated from Vinayaka Chaturthi Festival Management</p>
       </div>
     </div>
   );
