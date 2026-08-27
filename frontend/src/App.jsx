@@ -199,7 +199,9 @@ function App() {
 
         {/* ================= DASHBOARD ================= */}
 
-        {activePage === "Dashboard" && <Dashboard dashboard={dashboard} />}
+        {activePage === "Dashboard" && (
+          <Dashboard dashboard={dashboard} setActivePage={setActivePage} />
+        )}
 
         {/* ================= COLLECTIONS ================= */}
 

@@ -3,7 +3,6 @@ from database import get_db_connection
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 from psycopg2.extras import RealDictCursor
-from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(title="Vinayaka Chaturthi API")
 
@@ -29,6 +28,7 @@ class Collection(BaseModel):
     name: str
     amount: float
     collection_date: str
+    category: str
 
 
 class Expense(BaseModel):
@@ -84,7 +84,9 @@ def login(request: LoginRequest):
 
     connection = get_db_connection()
 
-    cursor = connection.cursor(cursor_factory=RealDictCursor)
+    cursor = connection.cursor(
+        cursor_factory=RealDictCursor
+    )
 
     cursor.execute(
         """
@@ -131,7 +133,12 @@ def get_collections():
 
     cursor.execute(
         """
-        SELECT id, name, amount, collection_date
+        SELECT
+            id,
+            name,
+            amount,
+            collection_date,
+            category
         FROM collections
         ORDER BY collection_date DESC
         """
@@ -160,13 +167,14 @@ def add_collection(collection: Collection):
     cursor.execute(
         """
         INSERT INTO collections
-        (name, amount, collection_date)
-        VALUES (%s, %s, %s)
+        (name, amount, collection_date, category)
+        VALUES (%s, %s, %s, %s)
         """,
         (
             collection.name,
             collection.amount,
-            collection.collection_date
+            collection.collection_date,
+            collection.category
         )
     )
 

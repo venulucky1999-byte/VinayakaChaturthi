@@ -7,12 +7,13 @@ import {
   ArrowUpRight,
   ArrowDownRight,
 } from "lucide-react";
+// import { useNavigate } from "react-router-dom";
 
-function Dashboard({ dashboard }) {
+function Dashboard({ dashboard, setActivePage }) {
   const collection = dashboard?.total_collection ?? 0;
   const expenditure = dashboard?.total_expenditure ?? 0;
   const balance = dashboard?.remaining_balance ?? 0;
-
+  // const navigate = useNavigate();
   return (
     <div className="modern-dashboard">
       {/* =========================
@@ -48,7 +49,10 @@ function Dashboard({ dashboard }) {
       <section className="financial-grid">
         {/* Collection */}
 
-        <div className="financial-card collection-card">
+        <div
+          className="financial-card collection-card"
+          onClick={() => setActivePage("Collections")}
+        >
           <div className="card-top">
             <div className="financial-icon">
               <TrendingUp size={22} />
@@ -69,7 +73,10 @@ function Dashboard({ dashboard }) {
 
         {/* Expenditure */}
 
-        <div className="financial-card expense-card">
+        <div
+          className="financial-card expense-card"
+          onClick={() => setActivePage("Expenses")}
+        >
           <div className="card-top">
             <div className="financial-icon">
               <TrendingDown size={22} />
