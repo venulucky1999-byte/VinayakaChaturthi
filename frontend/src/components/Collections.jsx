@@ -1,11 +1,5 @@
 import { useEffect, useState } from "react";
-import {
-  Plus,
-  Search,
-  UserRound,
-  Trash2,
-  Printer,
-} from "lucide-react";
+import { Plus, Search, UserRound, Trash2, Printer, Pencil } from "lucide-react";
 
 function Collections({ user, refreshDashboard }) {
   const [collections, setCollections] = useState([]);
@@ -13,18 +7,42 @@ function Collections({ user, refreshDashboard }) {
 
   const [showForm, setShowForm] = useState(false);
 
+  // =========================
+  // FORM STATES
+  // =========================
+
   const [name, setName] = useState("");
   const [amount, setAmount] = useState("");
   const [collectionDate, setCollectionDate] = useState("");
   const [category, setCategory] = useState("");
 
+  // =========================
+  // EDIT STATE
+  // =========================
+
+  const [editingId, setEditingId] = useState(null);
+
   const [categoryFilter, setCategoryFilter] = useState("All");
 
   const API_URL = "https://vinayaka-chaturthi-api.onrender.com";
 
-  // =========================================
+  // =========================
+  // CATEGORIES
+  // =========================
+
+  const categories = [
+    "Employees",
+    "Pensioners",
+    "Youth",
+    "Labor",
+    "Annavithrana",
+    "Hundi",
+    "Others",
+  ];
+
+  // =========================
   // GET COLLECTIONS
-  // =========================================
+  // =========================
 
   const fetchCollections = async () => {
     try {
@@ -48,14 +66,69 @@ function Collections({ user, refreshDashboard }) {
     fetchCollections();
   }, []);
 
-  // =========================================
-  // ADD COLLECTION
-  // =========================================
+  // =========================
+  // RESET FORM
+  // =========================
 
-  const handleAddCollection = async (e) => {
+  const resetForm = () => {
+    setName("");
+    setAmount("");
+    setCollectionDate("");
+    setCategory("");
+    setEditingId(null);
+    setShowForm(false);
+  };
+
+  // =========================
+  // ADD / UPDATE COLLECTION
+  // =========================
+
+  const handleSubmitCollection = async (e) => {
     e.preventDefault();
 
     try {
+      // =========================
+      // UPDATE
+      // =========================
+
+      if (editingId !== null) {
+        const response = await fetch(
+          `${API_URL}/api/collections/${editingId}`,
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              name: name,
+              amount: Number(amount),
+              collection_date: collectionDate,
+              category: category,
+            }),
+          },
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.detail || "Failed to update collection");
+        }
+
+        alert("Collection updated successfully");
+
+        resetForm();
+
+        await fetchCollections();
+
+        refreshDashboard();
+
+        return;
+      }
+
+      // =========================
+      // ADD
+      // =========================
+
       const response = await fetch(`${API_URL}/api/collections`, {
         method: "POST",
 
@@ -71,32 +144,44 @@ function Collections({ user, refreshDashboard }) {
         }),
       });
 
+      const data = await response.json();
+
       if (!response.ok) {
-        throw new Error("Failed to add collection");
+        throw new Error(data.detail || "Failed to add collection");
       }
 
-      // Clear form
-      setName("");
-      setAmount("");
-      setCollectionDate("");
-      setCategory("");
+      alert("Collection added successfully");
 
-      // Close modal
-      setShowForm(false);
+      resetForm();
 
-      // Get latest collections
       await fetchCollections();
 
-      // Refresh dashboard
       refreshDashboard();
     } catch (error) {
-      console.error("Add Collection Error:", error);
+      console.error("Collection Save Error:", error);
+
+      alert(error.message || "Something went wrong");
     }
   };
 
-  // =========================================
+  // =========================
+  // OPEN EDIT FORM
+  // =========================
+
+  const handleEditCollection = (item) => {
+    setEditingId(item.id);
+
+    setName(item.name || "");
+    setAmount(item.amount || "");
+    setCollectionDate(item.collection_date || "");
+    setCategory(item.category || "");
+
+    setShowForm(true);
+  };
+
+  // =========================
   // DELETE COLLECTION
-  // =========================================
+  // =========================
 
   const handleDeleteCollection = async (id) => {
     const confirmed = window.confirm(
@@ -112,76 +197,81 @@ function Collections({ user, refreshDashboard }) {
         method: "DELETE",
       });
 
+      const data = await response.json();
+
       if (!response.ok) {
-        throw new Error("Failed to delete collection");
+        throw new Error(data.detail || "Failed to delete collection");
       }
 
-      // Remove from screen immediately
       setCollections((currentCollections) =>
         currentCollections.filter((item) => item.id !== id),
       );
 
-      // Refresh dashboard
       refreshDashboard();
+
+      alert("Collection deleted successfully");
     } catch (error) {
       console.error("Delete Collection Error:", error);
+
+      alert(error.message || "Failed to delete collection");
     }
   };
 
-  // =========================================
+  // =========================
   // SEARCH + CATEGORY FILTER
-  // =========================================
+  // =========================
 
   const filteredCollections = collections.filter((item) => {
     const itemName = item.name || "";
     const itemCategory = item.category || "";
 
-    const matchesSearch = itemName
-      .toLowerCase()
-      .includes(search.toLowerCase());
+    const matchesSearch = itemName.toLowerCase().includes(search.toLowerCase());
 
     const matchesCategory =
-      categoryFilter === "All" ||
-      itemCategory === categoryFilter;
+      categoryFilter === "All" || itemCategory === categoryFilter;
 
     return matchesSearch && matchesCategory;
   });
 
-  // =========================================
-  // PRINT / DOWNLOAD
-  // =========================================
+  // =========================
+  // PRINT
+  // =========================
 
   const handlePrint = () => {
     window.print();
   };
 
-  // =========================================
-  // TOTAL OF FILTERED COLLECTIONS
-  // =========================================
+  // =========================
+  // TOTAL
+  // =========================
 
   const filteredTotal = filteredCollections.reduce(
     (total, item) => total + Number(item.amount || 0),
     0,
   );
 
-  // =========================================
+  // =========================
   // UI
-  // =========================================
+  // =========================
 
   return (
     <div className="page collections-page">
-      {/* ================= ADD MODAL ================= */}
+      {/* =========================
+          ADD / EDIT MODAL
+      ========================= */}
 
       {showForm && (
         <div className="modal-overlay no-print">
           <div className="modal">
-            <h2>Add Collection</h2>
+            <h2>{editingId !== null ? "Edit Collection" : "Add Collection"}</h2>
 
             <p className="modal-description">
-              Enter the details of the new collection.
+              {editingId !== null
+                ? "Update the collection details."
+                : "Enter the details of the new collection."}
             </p>
 
-            <form onSubmit={handleAddCollection}>
+            <form onSubmit={handleSubmitCollection}>
               {/* NAME */}
 
               <div className="form-group">
@@ -235,10 +325,12 @@ function Collections({ user, refreshDashboard }) {
                   required
                 >
                   <option value="">Select category</option>
-                  <option value="Employees">Employees</option>
-                  <option value="Pensioners">Pensioners</option>
-                  <option value="Youth">Youth</option>
-                  <option value="Labor">Labor</option>
+
+                  {categories.map((item) => (
+                    <option key={item} value={item}>
+                      {item}
+                    </option>
+                  ))}
                 </select>
               </div>
 
@@ -248,17 +340,23 @@ function Collections({ user, refreshDashboard }) {
                 <button
                   type="button"
                   className="cancel-button"
-                  onClick={() => setShowForm(false)}
+                  onClick={resetForm}
                 >
                   Cancel
                 </button>
 
-                <button
-                  type="submit"
-                  className="primary-button"
-                >
-                  <Plus size={19} />
-                  Add Collection
+                <button type="submit" className="primary-button">
+                  {editingId !== null ? (
+                    <>
+                      <Pencil size={19} />
+                      Update Collection
+                    </>
+                  ) : (
+                    <>
+                      <Plus size={19} />
+                      Add Collection
+                    </>
+                  )}
                 </button>
               </div>
             </form>
@@ -266,7 +364,9 @@ function Collections({ user, refreshDashboard }) {
         </div>
       )}
 
-      {/* ================= PAGE HEADER ================= */}
+      {/* =========================
+          PAGE HEADER
+      ========================= */}
 
       <div className="page-header no-print">
         <div>
@@ -274,9 +374,7 @@ function Collections({ user, refreshDashboard }) {
 
           <h1>Collections</h1>
 
-          <p className="page-description">
-            Track all festival contributions
-          </p>
+          <p className="page-description">Track all festival contributions</p>
         </div>
 
         {/* ADMIN ONLY */}
@@ -284,7 +382,14 @@ function Collections({ user, refreshDashboard }) {
         {user && user.role === "admin" && (
           <button
             className="primary-button"
-            onClick={() => setShowForm(true)}
+            onClick={() => {
+              setEditingId(null);
+              setName("");
+              setAmount("");
+              setCollectionDate("");
+              setCategory("");
+              setShowForm(true);
+            }}
           >
             <Plus size={19} />
             Add Collection
@@ -292,7 +397,9 @@ function Collections({ user, refreshDashboard }) {
         )}
       </div>
 
-      {/* ================= PRINT HEADER ================= */}
+      {/* =========================
+          PRINT HEADER
+      ========================= */}
 
       <div className="print-header">
         <h1>Vinayaka Chaturthi</h1>
@@ -304,9 +411,7 @@ function Collections({ user, refreshDashboard }) {
         <p>
           Category:{" "}
           <strong>
-            {categoryFilter === "All"
-              ? "All Categories"
-              : categoryFilter}
+            {categoryFilter === "All" ? "All Categories" : categoryFilter}
           </strong>
         </p>
 
@@ -317,12 +422,16 @@ function Collections({ user, refreshDashboard }) {
         )}
       </div>
 
-      {/* ================= TABLE ================= */}
+      {/* =========================
+          TABLE CARD
+      ========================= */}
 
       <div className="table-card">
         {/* TOOLBAR */}
 
         <div className="table-toolbar no-print">
+          {/* SEARCH */}
+
           <div className="search-box">
             <Search size={18} />
 
@@ -342,13 +451,15 @@ function Collections({ user, refreshDashboard }) {
             onChange={(e) => setCategoryFilter(e.target.value)}
           >
             <option value="All">All Categories</option>
-            <option value="Employees">Employees</option>
-            <option value="Pensioners">Pensioners</option>
-            <option value="Youth">Youth</option>
-            <option value="Labor">Labor</option>
+
+            {categories.map((item) => (
+              <option key={item} value={item}>
+                {item}
+              </option>
+            ))}
           </select>
 
-          {/* PRINT BUTTON */}
+          {/* PRINT */}
 
           <button
             className="print-button"
@@ -359,12 +470,16 @@ function Collections({ user, refreshDashboard }) {
             Print / Download
           </button>
 
+          {/* COUNT */}
+
           <div className="collection-count">
             {filteredCollections.length} Collections
           </div>
         </div>
 
-        {/* TABLE */}
+        {/* =========================
+            TABLE
+        ========================= */}
 
         <div className="table-wrapper">
           <table>
@@ -388,10 +503,10 @@ function Collections({ user, refreshDashboard }) {
               {filteredCollections.length === 0 ? (
                 <tr>
                   <td
-                    colSpan={
-                      user && user.role === "admin" ? 5 : 4
-                    }
-                    style={{ textAlign: "center" }}
+                    colSpan={user && user.role === "admin" ? 5 : 4}
+                    style={{
+                      textAlign: "center",
+                    }}
                   >
                     No collections found
                   </td>
@@ -429,19 +544,36 @@ function Collections({ user, refreshDashboard }) {
 
                     <td>{item.collection_date}</td>
 
-                    {/* ADMIN DELETE */}
+                    {/* ADMIN ACTIONS */}
 
                     {user && user.role === "admin" && (
                       <td className="no-print">
-                        <button
-                          className="delete-button"
-                          onClick={() =>
-                            handleDeleteCollection(item.id)
-                          }
-                          title="Delete collection"
+                        <div
+                          style={{
+                            display: "flex",
+                            gap: "8px",
+                          }}
                         >
-                          <Trash2 size={17} />
-                        </button>
+                          {/* EDIT */}
+
+                          <button
+                            className="edit-button"
+                            onClick={() => handleEditCollection(item)}
+                            title="Edit collection"
+                          >
+                            <Pencil size={17} />
+                          </button>
+
+                          {/* DELETE */}
+
+                          <button
+                            className="delete-button"
+                            onClick={() => handleDeleteCollection(item.id)}
+                            title="Delete collection"
+                          >
+                            <Trash2 size={17} />
+                          </button>
+                        </div>
                       </td>
                     )}
                   </tr>
@@ -456,15 +588,15 @@ function Collections({ user, refreshDashboard }) {
                 <tr>
                   <td
                     colSpan="2"
-                    style={{ textAlign: "right" }}
+                    style={{
+                      textAlign: "right",
+                    }}
                   >
                     <strong>Total</strong>
                   </td>
 
                   <td className="amount">
-                    <strong>
-                      ₹{filteredTotal.toLocaleString("en-IN")}
-                    </strong>
+                    <strong>₹{filteredTotal.toLocaleString("en-IN")}</strong>
                   </td>
 
                   <td></td>
@@ -479,19 +611,18 @@ function Collections({ user, refreshDashboard }) {
         </div>
       </div>
 
-      {/* ================= PRINT FOOTER ================= */}
+      {/* =========================
+          PRINT FOOTER
+      ========================= */}
 
       <div className="print-footer">
         <p>
-          Total Collections:{" "}
-          <strong>{filteredCollections.length}</strong>
+          Total Collections: <strong>{filteredCollections.length}</strong>
         </p>
 
         <p>
           Total Amount:{" "}
-          <strong>
-            ₹{filteredTotal.toLocaleString("en-IN")}
-          </strong>
+          <strong>₹{filteredTotal.toLocaleString("en-IN")}</strong>
         </p>
 
         <p>Generated from Vinayaka Chaturthi Festival Management</p>

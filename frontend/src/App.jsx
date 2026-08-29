@@ -1,6 +1,14 @@
 import { useEffect, useState } from "react";
 import { Menu } from "lucide-react";
 
+import {
+  Routes,
+  Route,
+  Navigate,
+  useNavigate,
+  useLocation,
+} from "react-router-dom";
+
 import Dashboard from "./components/Dashboard";
 import Collections from "./components/Collections";
 import Expenses from "./components/Expenses";
@@ -10,8 +18,10 @@ import Sidebar from "./components/Sidebar";
 import "./App.css";
 
 function App() {
+  const navigate = useNavigate();
+  const location = useLocation();
+
   const [dashboard, setDashboard] = useState(null);
-  const [activePage, setActivePage] = useState("Dashboard");
   const [mobileOpen, setMobileOpen] = useState(false);
 
   // Login states
@@ -23,12 +33,69 @@ function App() {
   const [user, setUser] = useState(null);
 
   // =========================================
+  // CURRENT PAGE
+  // =========================================
+
+  const getActivePage = () => {
+    switch (location.pathname) {
+      case "/collections":
+        return "Collections";
+
+      case "/expenses":
+        return "Expenses";
+
+      case "/gallery":
+        return "Photo Gallery";
+
+      default:
+        return "Dashboard";
+    }
+  };
+
+  const activePage = getActivePage();
+
+  // =========================================
+  // PAGE NAVIGATION
+  // =========================================
+
+  const handlePageChange = (page) => {
+    setMobileOpen(false);
+
+    switch (page) {
+      case "Dashboard":
+        navigate("/");
+        break;
+
+      case "Collections":
+        navigate("/collections");
+        break;
+
+      case "Expenses":
+        navigate("/expenses");
+        break;
+
+      case "Photo Gallery":
+        navigate("/gallery");
+        break;
+
+      default:
+        navigate("/");
+    }
+  };
+
+  // =========================================
   // REFRESH DASHBOARD
   // =========================================
 
   const refreshDashboard = () => {
     fetch("https://vinayaka-chaturthi-api.onrender.com/api/dashboard")
-      .then((response) => response.json())
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Failed to fetch dashboard");
+        }
+
+        return response.json();
+      })
       .then((data) => {
         setDashboard(data);
       })
@@ -57,9 +124,11 @@ function App() {
         "https://vinayaka-chaturthi-api.onrender.com/api/login",
         {
           method: "POST",
+
           headers: {
             "Content-Type": "application/json",
           },
+
           body: JSON.stringify({
             username: loginUsername,
             password: loginPassword,
@@ -71,18 +140,22 @@ function App() {
 
       if (!response.ok) {
         setLoginError(data.detail || "Invalid username or password");
+
         return;
       }
 
+      // Save logged-in user
       setUser(data.user);
 
+      // Close login modal
       setShowLogin(false);
 
+      // Clear login form
       setLoginUsername("");
       setLoginPassword("");
       setLoginError("");
     } catch (error) {
-      console.error(error);
+      console.error("Login Error:", error);
 
       setLoginError("Unable to connect to server");
     }
@@ -94,7 +167,9 @@ function App() {
 
   const handleLogout = () => {
     setUser(null);
-    setActivePage("Dashboard");
+
+    // Go back to Dashboard
+    navigate("/");
   };
 
   // =========================================
@@ -115,7 +190,7 @@ function App() {
 
       <Sidebar
         activePage={activePage}
-        setActivePage={setActivePage}
+        setActivePage={handlePageChange}
         mobileOpen={mobileOpen}
         setMobileOpen={setMobileOpen}
         user={user}
@@ -197,27 +272,47 @@ function App() {
           <Menu size={24} />
         </button>
 
-        {/* ================= DASHBOARD ================= */}
+        {/* ================= ROUTES ================= */}
 
-        {activePage === "Dashboard" && (
-          <Dashboard dashboard={dashboard} setActivePage={setActivePage} />
-        )}
+        <Routes>
+          {/* DASHBOARD */}
 
-        {/* ================= COLLECTIONS ================= */}
+          <Route
+            path="/"
+            element={
+              <Dashboard
+                dashboard={dashboard}
+                setActivePage={handlePageChange}
+              />
+            }
+          />
 
-        {activePage === "Collections" && (
-          <Collections user={user} refreshDashboard={refreshDashboard} />
-        )}
+          {/* COLLECTIONS */}
 
-        {/* ================= EXPENSES ================= */}
+          <Route
+            path="/collections"
+            element={
+              <Collections user={user} refreshDashboard={refreshDashboard} />
+            }
+          />
 
-        {activePage === "Expenses" && (
-          <Expenses user={user} refreshDashboard={refreshDashboard} />
-        )}
+          {/* EXPENSES */}
 
-        {/* ================= PHOTO GALLERY ================= */}
+          <Route
+            path="/expenses"
+            element={
+              <Expenses user={user} refreshDashboard={refreshDashboard} />
+            }
+          />
 
-        {activePage === "Photo Gallery" && <Gallery user={user} />}
+          {/* PHOTO GALLERY */}
+
+          <Route path="/gallery" element={<Gallery user={user} />} />
+
+          {/* UNKNOWN URL */}
+
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
       </main>
     </div>
   );

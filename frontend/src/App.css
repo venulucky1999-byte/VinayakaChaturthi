@@ -2217,3 +2217,853 @@ td {
   }
 
 }
+
+
+/* =========================================
+   EXPENSE HEADER ACTIONS
+========================================= */
+
+.page-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.secondary-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  padding: 11px 17px;
+
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+
+  background: #ffffff;
+  color: #374151;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: all 0.2s ease;
+}
+
+.secondary-button:hover {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+  transform: translateY(-1px);
+}
+
+
+/* =========================================
+   CATEGORY FILTER
+========================================= */
+
+.category-filter {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  height: 42px;
+
+  padding: 0 12px;
+
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+
+  background: #ffffff;
+
+  color: #64748b;
+}
+
+.category-filter select {
+  border: none;
+  outline: none;
+
+  background: transparent;
+
+  color: #374151;
+
+  font-size: 14px;
+  font-weight: 500;
+
+  cursor: pointer;
+}
+
+
+/* =========================================
+   EXPENSE CATEGORY BADGE
+========================================= */
+
+.expense-category {
+  display: inline-flex;
+  align-items: center;
+
+  padding: 5px 10px;
+
+  border-radius: 999px;
+
+  background: #f1f5f9;
+  color: #475569;
+
+  font-size: 12px;
+  font-weight: 600;
+
+  white-space: nowrap;
+}
+
+
+/* =========================================
+   EXPENSE MOBILE
+========================================= */
+
+@media (max-width: 768px) {
+
+  .page-header-actions {
+    width: 100%;
+
+    margin-top: 15px;
+
+    display: flex;
+  }
+
+  .page-header-actions button {
+    flex: 1;
+  }
+
+  .table-toolbar {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .search-box {
+    width: 100%;
+  }
+
+  .category-filter {
+    flex: 1;
+  }
+
+  .collection-count {
+    white-space: nowrap;
+  }
+
+}
+
+/* =========================================
+   COLLECTIONS & EXPENSES
+========================================= */
+
+.collections-page,
+.expenses-page {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* =========================================
+   PAGE HEADER
+========================================= */
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 20px;
+  margin-bottom: 28px;
+}
+
+.page-header > div:first-child {
+  width: auto;
+  text-align: left;
+}
+
+.page-label {
+  font-size: 11px;
+  color: #f97316;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  margin-bottom: 7px;
+}
+
+.page-header h1 {
+  margin: 0 0 6px;
+  font-size: 32px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.page-description {
+  margin: 0;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+/* =========================================
+   HEADER ACTIONS
+========================================= */
+
+.page-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.primary-button,
+.secondary-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  min-height: 42px;
+  padding: 11px 17px;
+
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.primary-button {
+  border: none;
+  background: #f97316;
+  color: white;
+}
+
+.primary-button:hover {
+  background: #ea580c;
+  transform: translateY(-1px);
+}
+
+.secondary-button {
+  border: 1px solid #e5e7eb;
+  background: white;
+  color: #374151;
+}
+
+.secondary-button:hover {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+  transform: translateY(-1px);
+}
+
+/* =========================================
+   TABLE CARD
+========================================= */
+
+.table-card {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 8px 30px rgba(15, 23, 42, 0.04);
+}
+
+/* =========================================
+   TABLE TOOLBAR
+========================================= */
+
+.table-toolbar {
+  padding: 18px 22px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 12px;
+
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.toolbar-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+}
+
+/* =========================================
+   SEARCH
+========================================= */
+
+.search-box {
+  width: 280px;
+
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  padding: 10px 13px;
+
+  background: #f5f7fb;
+  border: 1px solid transparent;
+  border-radius: 10px;
+
+  color: #6b7280;
+
+  transition: 0.2s ease;
+}
+
+.search-box:focus-within {
+  background: white;
+  border-color: #fed7aa;
+  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.08);
+}
+
+.search-box input {
+  width: 100%;
+
+  border: none;
+  outline: none;
+
+  background: transparent;
+
+  font-size: 14px;
+  color: #374151;
+}
+
+/* =========================================
+   CATEGORY FILTER
+========================================= */
+
+.category-filter {
+  height: 42px;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+
+  padding: 0 12px;
+
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+
+  background: white;
+  color: #64748b;
+
+  font-size: 14px;
+}
+
+.category-filter select {
+  min-width: 125px;
+
+  border: none;
+  outline: none;
+
+  background: transparent;
+
+  color: #374151;
+  font-size: 14px;
+  font-weight: 500;
+
+  cursor: pointer;
+}
+
+/* =========================================
+   COUNT
+========================================= */
+
+.collection-count {
+  color: #6b7280;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+/* =========================================
+   TABLE
+========================================= */
+
+.table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th {
+  padding: 15px 22px;
+
+  text-align: left;
+
+  background: #f9fafb;
+
+  color: #6b7280;
+
+  font-size: 12px;
+  font-weight: 700;
+
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+
+  white-space: nowrap;
+}
+
+td {
+  padding: 17px 22px;
+
+  border-top: 1px solid #f0f0f0;
+
+  font-size: 14px;
+  color: #374151;
+
+  white-space: nowrap;
+}
+
+tbody tr {
+  transition: background 0.2s ease;
+}
+
+tbody tr:hover {
+  background: #fafafa;
+}
+
+/* =========================================
+   PERSON
+========================================= */
+
+.person {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  font-weight: 500;
+  color: #111827;
+}
+
+.person-icon {
+  width: 36px;
+  height: 36px;
+
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 10px;
+
+  background: #fff7ed;
+  color: #f97316;
+}
+
+.amount {
+  font-weight: 700;
+  color: #111827;
+}
+
+/* =========================================
+   COLLECTION CATEGORY BADGE
+========================================= */
+
+.category-badge,
+.expense-category {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 5px 10px;
+
+  border-radius: 999px;
+
+  background: #f1f5f9;
+  color: #475569;
+
+  font-size: 12px;
+  font-weight: 600;
+
+  white-space: nowrap;
+}
+
+/* =========================================
+   ACTION BUTTONS
+========================================= */
+
+.action-buttons {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.edit-button,
+.delete-button {
+  width: 36px;
+  height: 36px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  border: none;
+  border-radius: 8px;
+
+  cursor: pointer;
+
+  transition: all 0.2s ease;
+}
+
+.edit-button {
+  background: #eff6ff;
+  color: #2563eb;
+}
+
+.edit-button:hover {
+  background: #dbeafe;
+  transform: scale(1.05);
+}
+
+.delete-button {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.delete-button:hover {
+  background: #fecaca;
+  transform: scale(1.05);
+}
+
+/* =========================================
+   MODAL
+========================================= */
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+
+  background: rgba(17, 24, 39, 0.55);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 20px;
+
+  z-index: 2000;
+}
+
+.modal {
+  width: 100%;
+  max-width: 460px;
+
+  max-height: 90vh;
+  overflow-y: auto;
+
+  background: white;
+
+  border-radius: 20px;
+
+  padding: 28px;
+
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.2);
+
+  animation: modalShow 0.2s ease;
+}
+
+@keyframes modalShow {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.modal h2 {
+  margin: 0 0 6px;
+
+  font-size: 24px;
+  color: #111827;
+}
+
+.modal-description {
+  margin: 0 0 25px;
+
+  color: #6b7280;
+  font-size: 14px;
+}
+
+/* =========================================
+   FORM
+========================================= */
+
+.form-group {
+  margin-bottom: 18px;
+}
+
+.form-group label {
+  display: block;
+
+  margin-bottom: 7px;
+
+  font-size: 13px;
+  font-weight: 600;
+
+  color: #374151;
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+
+  box-sizing: border-box;
+
+  padding: 12px 13px;
+
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+
+  outline: none;
+
+  background: white;
+
+  font-size: 14px;
+  color: #374151;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  border-color: #f97316;
+
+  box-shadow:
+    0 0 0 3px rgba(249, 115, 22, 0.1);
+}
+
+/* =========================================
+   MODAL ACTIONS
+========================================= */
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+
+  gap: 10px;
+
+  margin-top: 25px;
+}
+
+.cancel-button {
+  min-height: 42px;
+
+  border: 1px solid #d1d5db;
+
+  background: white;
+  color: #374151;
+
+  padding: 11px 18px;
+
+  border-radius: 10px;
+
+  cursor: pointer;
+
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.cancel-button:hover {
+  background: #f9fafb;
+}
+
+/* =========================================
+   ACCESS DENIED
+========================================= */
+
+.access-modal {
+  width: 100%;
+  max-width: 400px;
+
+  background: white;
+
+  border-radius: 20px;
+
+  padding: 32px;
+
+  text-align: center;
+
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.2);
+}
+
+.access-icon {
+  font-size: 42px;
+  margin-bottom: 15px;
+}
+
+.access-modal h2 {
+  margin: 0 0 8px;
+  color: #111827;
+}
+
+.access-modal p {
+  margin: 0 0 25px;
+
+  color: #6b7280;
+  font-size: 14px;
+}
+
+/* =========================================
+   MOBILE - COLLECTIONS / EXPENSES
+========================================= */
+
+@media (max-width: 768px) {
+
+  .collections-page,
+  .expenses-page {
+    width: 100%;
+  }
+
+  .page-header {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 15px;
+
+    margin-bottom: 20px;
+  }
+
+  .page-header > div:first-child {
+    width: 100%;
+    text-align: center;
+  }
+
+  .page-header h1 {
+    font-size: 27px;
+  }
+
+  .page-description {
+    font-size: 13px;
+  }
+
+  .page-header-actions {
+    width: 100%;
+  }
+
+  .page-header-actions button {
+    flex: 1;
+  }
+
+  .table-card {
+    border-radius: 15px;
+  }
+
+  .table-toolbar {
+    flex-wrap: wrap;
+
+    padding: 15px;
+  }
+
+  .toolbar-left {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .search-box {
+    width: 100%;
+  }
+
+  .category-filter {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .category-filter select {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .print-button {
+    flex: 1;
+  }
+
+  .collection-count {
+    width: 100%;
+    text-align: center;
+  }
+
+  th,
+  td {
+    padding: 13px 15px;
+  }
+
+  .modal {
+    padding: 22px;
+
+    border-radius: 17px;
+  }
+
+  .modal h2 {
+    font-size: 21px;
+  }
+
+  .modal-actions {
+    flex-direction: column-reverse;
+  }
+
+  .modal-actions button {
+    width: 100%;
+  }
+
+  .action-buttons {
+    gap: 5px;
+  }
+
+  .edit-button,
+  .delete-button {
+    width: 34px;
+    height: 34px;
+  }
+}
+
+/* =========================================
+   SMALL MOBILE
+========================================= */
+
+@media (max-width: 420px) {
+
+  .page-header h1 {
+    font-size: 24px;
+  }
+
+  .page-header-actions {
+    flex-direction: column;
+  }
+
+  .page-header-actions button {
+    width: 100%;
+  }
+
+  .table-toolbar {
+    padding: 12px;
+  }
+
+  .category-filter,
+  .print-button {
+    width: 100%;
+    flex: none;
+  }
+
+  .category-filter {
+    justify-content: space-between;
+  }
+
+  .category-filter select {
+    text-align: right;
+  }
+
+  .modal-overlay {
+    padding: 12px;
+  }
+
+  .modal {
+    padding: 20px;
+  }
+}

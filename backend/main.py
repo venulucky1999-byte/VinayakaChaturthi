@@ -35,6 +35,7 @@ class Expense(BaseModel):
     description: str
     amount: float
     expense_date: str
+    category: str
 
 
 class LoginRequest(BaseModel):
@@ -243,7 +244,8 @@ def get_expenses():
             id,
             description,
             amount,
-            expense_date
+            expense_date,
+            category
         FROM expenses
         ORDER BY expense_date DESC
         """
@@ -272,13 +274,14 @@ def add_expense(expense: Expense):
     cursor.execute(
         """
         INSERT INTO expenses
-        (description, amount, expense_date)
-        VALUES (%s, %s, %s)
+        (description, amount, expense_date, category)
+        VALUES (%s, %s, %s, %s)
         """,
         (
             expense.description,
             expense.amount,
-            expense.expense_date
+            expense.expense_date,
+            expense.category
         )
     )
 
@@ -365,4 +368,100 @@ def dashboard():
         "total_collection": float(total_collection),
         "total_expenditure": float(total_expenditure),
         "remaining_balance": float(remaining_balance)
+    }
+
+# =========================
+# EDIT COLLECTION
+# =========================
+
+@app.put("/api/collections/{collection_id}")
+def update_collection(
+    collection_id: int,
+    collection: Collection
+):
+
+    connection = get_db_connection()
+    cursor = connection.cursor()
+
+    cursor.execute(
+        """
+        UPDATE collections
+        SET
+            name = %s,
+            amount = %s,
+            collection_date = %s,
+            category = %s
+        WHERE id = %s
+        """,
+        (
+            collection.name,
+            collection.amount,
+            collection.collection_date,
+            collection.category,
+            collection_id
+        )
+    )
+
+    updated_rows = cursor.rowcount
+
+    connection.commit()
+
+    cursor.close()
+    connection.close()
+
+    if updated_rows == 0:
+        raise HTTPException(
+            status_code=404,
+            detail="Collection not found"
+        )
+
+    return {
+        "message": "Collection updated successfully"
+    }
+
+
+# =========================
+# UPDATE EXPENSE
+# =========================
+
+@app.put("/api/expenses/{expense_id}")
+def update_expense(expense_id: int, expense: Expense):
+
+    connection = get_db_connection()
+    cursor = connection.cursor()
+
+    cursor.execute(
+        """
+        UPDATE expenses
+        SET
+            description = %s,
+            amount = %s,
+            expense_date = %s,
+            category = %s
+        WHERE id = %s
+        """,
+        (
+            expense.description,
+            expense.amount,
+            expense.expense_date,
+            expense.category,
+            expense_id
+        )
+    )
+
+    updated_rows = cursor.rowcount
+
+    connection.commit()
+
+    cursor.close()
+    connection.close()
+
+    if updated_rows == 0:
+        raise HTTPException(
+            status_code=404,
+            detail="Expense not found"
+        )
+
+    return {
+        "message": "Expense updated successfully"
     }
